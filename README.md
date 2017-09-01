@@ -14,6 +14,8 @@ skiplist_main performance evaluation
 # HISTORY
 - 2017.9.1
 
-init impl skiplist_main.cpp
-add skiplist serialization
-add dump_file & load_file function
+  init impl skiplist_main.cpp
+  
+  add skiplist serialization
+  
+  add dump_file & load_file function
