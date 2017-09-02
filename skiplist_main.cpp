@@ -143,7 +143,7 @@ uint64_t timeus() {
 
 int randomLevel(void) {
     int level = 1;
-    while ((random() & 0xFFFF) < (LEVEL_RATIO * 0xFFFF))
+    while ((random() & 0xFFFF) < (0.25 * 0xFFFF))
         level += 1;
     return (level < MAXLEVEL) ? level : MAXLEVEL;
 }
@@ -207,23 +207,30 @@ int SkipList::remove(Elem newValue) {
     return 0;
 }
 
-
-void Dump(int count) {
+void DumpTo(char *dump_file,int count){
     SkipList S;
     for (int i = 0; i < count; i++) {
         S.insert(i);
-    }
-    //S.print();
-    char dump_file[] = "dump";
-    printf("point count:%d\n", count);
+    }    
     uint64_t start = timeus();
     S.dump_file(dump_file);
     printf("  dump:%lld\n", timeus() - start);
+    //S.print();    
+}
+
+void LoadFrom(char* dump_file){
     SkipList U;
-    start = timeus();
+    uint64_t start = timeus();
     U.load_file(dump_file);
-    printf("  load:%lld\n", timeus() - start);
-    //U.print();
+    printf("  load:%lld\n", timeus() - start);   
+    //U.print(); 
+}
+
+void Dump(int count) {
+    char dump_file[] = "dump";
+    printf("point count:%d\n", count);
+    DumpTo(dump_file, count);
+    LoadFrom(dump_file);
 }
 
 
