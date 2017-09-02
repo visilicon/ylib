@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <time.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 using namespace std;
 
@@ -14,6 +15,24 @@ typedef int Elem;
 struct NodeValue {
     int myLevel;
     Elem value;
+};
+
+uint64_t timeus() {
+    timeval time;
+    ::gettimeofday(&time, 0);
+    return time.tv_sec * 1000 * 1000 + time.tv_usec;
+}
+class SkipList;
+
+struct SkipNodeRef {
+public:
+    SkipList *list;
+    int level;
+
+    SkipNodeRef(SkipList *head, int l) {
+        list = head;
+        level = l;
+    }
 };
 
 class SkipNode {
@@ -95,30 +114,22 @@ public:
             }
         }
         max_level = maxlevel;
+        pthread_t thread[maxlevel];
+        uint64_t start = timeus();
         for (int i = 1; i <= max_level; i++) {
-            format_link(i);
+            SkipNodeRef args(this, i);
+            pthread_create(&thread[i - 1], NULL, SkipList::format_link, &args);
+
         }
+        for (int i = 0; i < maxlevel; i++) {
+            pthread_join(thread[i], NULL);
+        }
+        printf("  format_link sum cost:%lld\n", timeus() - start);
+
         return true;
     }
 
-    void format_link(int i) {
-        SkipNode *pre = head;
-        SkipNode *next = NULL;
-        if (pre != NULL) {
-            next = pre->forward[0];
-        }
-        while (pre != NULL && next != NULL) {
-            if (pre->value.myLevel >= i && next->value.myLevel >= i) {
-                pre->forward[i] = next;
-                pre = next;
-                next = next->forward[0];
-            } else {
-                next = next->forward[0];
-            }
-        }
-
-
-    }
+    static void *format_link(void *args);
 
     void print() {
         SkipNode *node = head;
@@ -135,16 +146,12 @@ public:
     }
 };
 
-uint64_t timeus() {
-    timeval time;
-    ::gettimeofday(&time, 0);
-    return time.tv_sec * 1000 * 1000 + time.tv_usec;
-}
+
 
 
 int randomLevel(void) {
     int level = 1;
-    while ((random() & 0xFFFF) < (0.25 * 0xFFFF))
+    while ((random() & 0xFFFF) < (LEVEL_RATIO * 0xFFFF))
         level += 1;
     return (level < MAXLEVEL) ? level : MAXLEVEL;
 }
@@ -208,23 +215,45 @@ int SkipList::remove(Elem newValue) {
     return 0;
 }
 
+void *SkipList::format_link(void *args) {
+    SkipNodeRef *ref = (SkipNodeRef *) args;
+    SkipList *list = ref->list;
+    int level = ref->level;
+    SkipNode *pre = list->head;
+    SkipNode *next = NULL;
+    if (pre != NULL) {
+        next = pre->forward[0];
+    }
+    while (pre != NULL && next != NULL) {
+        if (pre->value.myLevel >= level && next->value.myLevel >= level) {
+            pre->forward[level] = next;
+            pre = next;
+            next = next->forward[0];
+        } else {
+            next = next->forward[0];
+        }
+    }
+    return NULL;
+}
+
+
 void DumpTo(char *dump_file,int count){
     SkipList S;
     for (int i = 0; i < count; i++) {
         S.insert(i);
-    }    
+    }
     uint64_t start = timeus();
     S.dump_file(dump_file);
     printf("  dump:%lld\n", timeus() - start);
-    //S.print();    
+    //S.print();
 }
 
 void LoadFrom(char* dump_file){
     SkipList U;
     uint64_t start = timeus();
     U.load_file(dump_file);
-    printf("  load:%lld\n", timeus() - start);   
-    //U.print(); 
+    printf("  load:%lld\n", timeus() - start);
+    //U.print();
 }
 
 void Dump(int count) {
