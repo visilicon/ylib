@@ -22,7 +22,11 @@ skiplist_thd multi thread for skiplist level restruct, performance below:
 
 
 # HISTORY
-- 2017.9.1
+- 2017.09.02
+
+  add skiplist multi thread version for reconstruct level
+  
+- 2017.09.01
 
   init impl skiplist_main.cpp
   
