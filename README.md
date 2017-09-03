@@ -32,6 +32,10 @@ skiplist_opt traversal once for skiplist level restruct, performance below:
 
 
 # HISTORY
+- 2017.09.03
+
+  add skiplist_opt traversal once for reconstruct level
+  
 - 2017.09.02
 
   add skiplist multi thread version for reconstruct level
