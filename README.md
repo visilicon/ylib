@@ -30,6 +30,33 @@ skiplist_opt traversal once for skiplist level restruct, performance below:
 |50000000|4,919,623|**9,424,774**
 |100000000|12,052,898|**18,920,745**
 
+skiplist_optr dump and load optimization base on skip_list_opt, performance below:
+
+||dump-time(us)|load-time(us)
+---|---|---
+|10000|44,389|15,287
+|1000000|**31,326**|138,563
+|10000000|**215,302**|**1,435,733**
+|50000000|**1,352,561**|**8,410,503**
+|100000000|**9,412,041**|**16,796,663**
+
+point count:100000
+  dump:44389
+  load:15287
+point count:1000000
+  dump:31326
+  load:138563
+point count:10000000
+  dump:215302
+  load:1435733
+point count:50000000
+  dump:1352561
+  load:8410503
+point count:100000000
+  dump:9412041
+  load:16796663
+
+
 
 # HISTORY
 - 2017.09.03
