@@ -20,8 +20,22 @@ skiplist_thd multi thread for skiplist level restruct, performance below:
 |50000000|3,191,959|11,606,632
 |100000000|11,891,452|29,854,225
 
+skiplist_opt traversal once for skiplist level restruct, performance below:
+
+||dump-time(us)|load-time(us)
+---|---|---
+|10000|13,837|**14,515**
+|1000000|75,287|**150,434**
+|10000000|689,312|**1,842,474**
+|50000000|4,919,623|**9,424,774**
+|100000000|12,052,898|**18,920,745**
+
 
 # HISTORY
+- 2017.09.03
+
+  add skiplist_opt traversal once for reconstruct level
+  
 - 2017.09.02
 
   add skiplist multi thread version for reconstruct level
